@@ -12,7 +12,7 @@
     <script>
       function connectToServer(){
         console.log(document.getElementById('serverAddress').value);
-        url = 'ws://' + document.getElementById('serverAddress').value + ':8080';
+        url = 'ws://' + document.getElementById('serverAddress').value + ':8001';
 
         if(connection != null && connection.readyState === WebSocket.OPEN){
           connection.close();
