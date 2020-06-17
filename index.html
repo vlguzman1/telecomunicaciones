@@ -10,33 +10,47 @@
     <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
 
     <script>
-      var totalBytes=0;
-      const url = 'ws://127.0.0.1:8080';
-      const connection = new WebSocket(url);
-      let myTimer = null;
+      function connectToServer(){
+        console.log(document.getElementById('serverAddress').value);
+        url = 'ws://' + document.getElementById('serverAddress').value + ':8080';
+
+        if(connection != null && connection.readyState === WebSocket.OPEN){
+          connection.close();
+        }
+        else{
+          connection = new WebSocket(url);
+        }
+        connection.onopen = () => {
+          //connection.send('hey');
+          document.getElementById("connectionStatus").className = "connected";
+          document.getElementById("connectionStatus").innerHTML="Conectado a " + document.getElementById('serverAddress').value;
+          console.log(document.getElementById("btnConnect"));
+          document.getElementById("btnConnect").value="Desconectar";
+        }
+        connection.onerror = (error) => {
+          console.log(`WebSocket error: ${error}`);
+          window.alert("Error: No se pudo conectar a " + url);
+          //console.log(error);
+        }
+        connection.onclose = () => {
+          document.getElementById("connectionStatus").className = "disconnected";
+          document.getElementById("connectionStatus").innerHTML="Desconectado";
+          document.getElementById("btnConnect").value="Conectar";
+        }
+
+        connection.onmessage = (e) => {
+          if(Number.isNaN(totalBytes)) totalBytes=0;
+          totalBytes = totalBytes + parseInt(e.data);
+        }
+      }
+      let totalBytes=0;
+      let url = null;
+      let connection = null;
       const timerRefresh = 1 * 1000; //Milisegundos
 
       console.log(totalBytes);
 
-      connection.onopen = () => {
-        connection.send('hey');
-        document.getElementById("connectionStatus").className = "connected";
-        document.getElementById("connectionStatus").innerHTML="Conectado";
-      }
-      connection.onerror = (error) => {
-        console.log(`WebSocket error: ${error}`)
-      }
-      connection.onclose = () => {
-        document.getElementById("connectionStatus").className = "disconnected";
-        document.getElementById("connectionStatus").innerHTML="Desconectado";
-        clearInterval(myTimer);
-      }
 
-      connection.onmessage = (e) => {
-//        console.log(e.data);
-        if(Number.isNaN(totalBytes)) totalBytes=0;
-        totalBytes = totalBytes + parseInt(e.data);
-      }
 /*
       function refreshTimer(){
         var d = new Date();
@@ -193,6 +207,7 @@
     </style>
   </head>
   <body>
+    <div><label for="serverAddress">Servidor:</label><input size="10" id="serverAddress" value=""> <input id="btnConnect" type="button" value="Conectar" onClick="connectToServer();"></div>
     <div id="connectionStatus" class="disconnected">Desconectado</div>
     <div id="divStatus">0 bytes/seg</div>
     <div id="chartdiv"></div>
