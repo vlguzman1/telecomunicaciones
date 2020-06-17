@@ -5,7 +5,10 @@ var decoders = require('cap').decoders;
 var PROTOCOL = decoders.PROTOCOL;
 
 var c = new Cap();
+//ÉSTA ES LA DIRECCIÓN IP DEL SERVIDOR DONDE SE VA A CORRER EL MONITOR:
 var device = Cap.findDevice('192.168.0.4');
+//PUERTO DONDE VA A CORRER EL SERVIDOR DE SOCKETS:
+var wsPort = 8001;
 //var filter = 'tcp and dst port 443';
 var filter = 'tcp';
 var bufSize = 10 * 1024 * 1024;
@@ -60,7 +63,7 @@ c.on('packet', function(nbytes, trunc) {
 });
 
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8001 });
+const wss = new WebSocket.Server({ port: wsPort });
 wss.on('connection', ws => {
   ws.on('message', message => {
     console.log(`Received message => ${message}`)
