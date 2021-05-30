@@ -18,6 +18,6 @@
   "homepage": "https://github.com/vlguzman1/telecomunicaciones#readme",
   "dependencies": {
     "cap": "^0.2.1",
-    "ws": "^7.3.0"
+    "ws": "^7.4.6"
   }
 }
